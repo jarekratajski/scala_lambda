@@ -1,37 +1,33 @@
 package lambdas
 
 import lambdas.Display._
-import pl.setblack.badlam.Lambda
+import pl.setblack.badlam.{Cardinals, Lambda}
 
 object Example4 extends App {
-
   val aTrue:Lambda = (x) => (y) => x
-  println("true ~ " + usingXYZ.display(aTrue))
 
   val aFalse:Lambda = (x) => (y) => y
-  println("false ~ " + usingXYZ.display(aFalse))
+  val pred:Lambda = (n) => (f) => (x) => n((g) => (h) => h(g(f)))((u) => x)((u) => u)
 
-  val and:Lambda = (p) => (q) => p(q)(p)
-  println("and ~ " + usingXYZ.display(and))
-  println("and ~ " + usingPQ.display(and))
+  val ifLambda:Lambda = (c) => (t) => (f) => c(t)(f)((x:Lambda) => x)
 
-  val or:Lambda = (p) => (q) => p(p)(q)
+  val isZero:Lambda = (n) => n((x) => aFalse)(aTrue)
 
-  val not:Lambda = (p) => (a) => (b) => p(b)(a)
 
-  val left:Lambda = (p) => (q) => not(and(p)(q))
-  val right:Lambda = (p) => (q) => or(not(p))(not(q))
-  val l1 = left(aTrue)(aFalse)
-  val r1 = right(aTrue)(aFalse)
+  val autocall:Lambda = (x) => x(x)
+  val Y:Lambda = (f) => autocall((y) => f((v) => y(y)(v)))
 
-  val booleans  = Set(aTrue,aFalse)
-  val results = for {p <-  booleans
-                                            q <- booleans}
-    yield (left(p)(q), right(p)(q))
-  results.foreach( r => {
-    print(usingXYZ.display(r._1))
-    print("  ")
-    println(usingXYZ.display(r._2))
-  })
 
+  val G:Lambda = (r) => (n) =>
+    (ifLambda(isZero(n))
+    ((x) => Cardinals.ONE)
+    ((x) => Cardinals.MULT(n)(r(pred(n))))
+      )
+
+  val fact = Y(G)
+  val a = Cardinals.fromInteger(6)
+  println("a ~ " + usingFX.display(a))
+  val result = fact(a)
+  println("a! ~ " + usingFX.display(result))
+  println("a! = " + Cardinals.toInteger(result))
 }

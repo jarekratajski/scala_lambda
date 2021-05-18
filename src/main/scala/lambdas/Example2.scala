@@ -18,7 +18,7 @@ object Example2 extends App {
 
   val res1 = and(aTrue)(aTrue)
   println("res1 " + usingXYZ.display(res1))
-
+//
   val res2 = and(aTrue)(aFalse)
   println("res2 " + usingXYZ.display(res2))
 }
